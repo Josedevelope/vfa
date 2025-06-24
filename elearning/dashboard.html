@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VFA-JORGE E-Learning Dashboard - Gerencie seus cursos, acompanhe seu progresso e acesse recursos educacionais.">
+    <meta name="keywords" content="VFA-JORGE, e-learning, dashboard, cursos, progresso, educação">
+    <meta name="author" content="VFA-JORGE">
+    
+    <title>Dashboard - VFA-JORGE E-Learning</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/elearning.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <span class="brand-vfa">VFA</span>
+                <span class="brand-jorge">JORGE</span>
+                <div class="brand-subtitle">E-Learning</div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/60x60/6A5ACD/FFFFFF?text=JD" alt="João Domingos" id="userAvatar">
+                </div>
+                <div class="user-info">
+                    <h6 class="user-name">João Domingos</h6>
+                    <span class="user-role">Estudante Premium</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item active">
+                    <a href="#" class="menu-link" data-page="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="courses">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Meus Cursos</span>
+                        <span class="badge">3</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="catalog">
+                        <i class="fas fa-book"></i>
+                        <span>Catálogo</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="progress">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Progresso</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="certificates">
+                        <i class="fas fa-certificate"></i>
+                        <span>Certificados</span>
+                        <span class="badge">2</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendário</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="community">
+                        <i class="fas fa-users"></i>
+                        <span>Comunidade</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-page="support">
+                        <i class="fas fa-headset"></i>
+                        <span>Suporte</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="upgrade-card">
+                    <div class="upgrade-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="upgrade-content">
+                        <h6>Upgrade para Pro</h6>
+                        <p>Acesso ilimitado a todos os cursos</p>
+                        <button class="btn btn-upgrade">Upgrade</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item active">Dashboard</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar cursos, instrutores...">
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <button class="action-btn" id="messagesBtn">
+                        <i class="fas fa-envelope"></i>
+                        <span class="notification-badge">1</span>
+                    </button>
+
+                    <div class="user-dropdown">
+                        <button class="user-btn" id="userDropdown">
+                            <img src="https://via.placeholder.com/40x40/6A5ACD/FFFFFF?text=JD" alt="João Domingos">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Meu Perfil
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configurações
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-question-circle"></i>
+                                Ajuda
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content" id="dashboardContent">
+            <!-- Welcome Section -->
+            <section class="welcome-section" data-aos="fade-up">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h1>Bem-vindo de volta, João! 👋</h1>
+                        <p>Continue sua jornada de aprendizado. Você está fazendo um ótimo progresso!</p>
+                    </div>
+                    <div class="welcome-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>
+                            Continuar Aprendendo
+                        </button>
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>
+                            Explorar Cursos
+                        </button>
+                    </div>
+                </div>
+                <div class="welcome-visual">
+                    <img src="assets/images/B9Bp3lct8TKY.jpg" alt="E-learning" class="welcome-image">
+                </div>
+            </section>
+
+            <!-- Stats Cards -->
+            <section class="stats-section" data-aos="fade-up" data-aos-delay="100">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-count="3">0</h3>
+                                <p class="stat-label">Cursos Ativos</p>
+                                <span class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +1 este mês
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon accent">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-count="47">0</h3>
+                                <p class="stat-label">Horas Estudadas</p>
+                                <span class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +12h esta semana
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-count="2">0</h3>
+                                <p class="stat-label">Certificados</p>
+                                <span class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +1 este mês
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-count="70">0</h3>
+                                <p class="stat-label">% Progresso Médio</p>
+                                <span class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +15% este mês
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Courses -->
+            <section class="courses-section" data-aos="fade-up" data-aos-delay="200">
+                <div class="section-header">
+                    <h2>Cursos em Andamento</h2>
+                    <a href="#" class="view-all">Ver todos <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="course-card">
+                            <div class="course-image">
+                                <img src="assets/images/gyemKorp0Fqz.jpg" alt="Gestão Ambiental">
+                                <div class="course-progress-overlay">
+                                    <div class="progress-circle" data-progress="75">
+                                        <svg class="progress-ring" width="60" height="60">
+                                            <circle class="progress-ring-circle" cx="30" cy="30" r="25"></circle>
+                                        </svg>
+                                        <span class="progress-text">75%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">Gestão Ambiental</div>
+                                <h4 class="course-title">Controle e Gestão Ambiental Avançada</h4>
+                                <p class="course-instructor">
+                                    <i class="fas fa-user"></i>
+                                    Prof. Maria Santos
+                                </p>
+                                <div class="course-meta">
+                                    <span class="course-duration">
+                                        <i class="fas fa-clock"></i>
+                                        40h restantes
+                                    </span>
+                                    <span class="course-lessons">
+                                        <i class="fas fa-play-circle"></i>
+                                        12/16 aulas
+                                    </span>
+                                </div>
+                                <button class="btn btn-primary w-100">
+                                    <i class="fas fa-play me-2"></i>
+                                    Continuar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="course-card">
+                            <div class="course-image">
+                                <img src="assets/images/xg9ApWoIcu26.jpg" alt="Automação Industrial">
+                                <div class="course-progress-overlay">
+                                    <div class="progress-circle" data-progress="45">
+                                        <svg class="progress-ring" width="60" height="60">
+                                            <circle class="progress-ring-circle" cx="30" cy="30" r="25"></circle>
+                                        </svg>
+                                        <span class="progress-text">45%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">Engenharia</div>
+                                <h4 class="course-title">Automação Industrial com PLC</h4>
+                                <p class="course-instructor">
+                                    <i class="fas fa-user"></i>
+                                    Eng. Carlos Mendes
+                                </p>
+                                <div class="course-meta">
+                                    <span class="course-duration">
+                                        <i class="fas fa-clock"></i>
+                                        60h restantes
+                                    </span>
+                                    <span class="course-lessons">
+                                        <i class="fas fa-play-circle"></i>
+                                        9/20 aulas
+                                    </span>
+                                </div>
+                                <button class="btn btn-primary w-100">
+                                    <i class="fas fa-play me-2"></i>
+                                    Continuar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="course-card">
+                            <div class="course-image">
+                                <img src="assets/images/DcxI2iPgTUsm.jpg" alt="Segurança no Trabalho">
+                                <div class="course-progress-overlay">
+                                    <div class="progress-circle" data-progress="90">
+                                        <svg class="progress-ring" width="60" height="60">
+                                            <circle class="progress-ring-circle" cx="30" cy="30" r="25"></circle>
+                                        </svg>
+                                        <span class="progress-text">90%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">Segurança</div>
+                                <h4 class="course-title">Segurança e Saúde no Trabalho</h4>
+                                <p class="course-instructor">
+                                    <i class="fas fa-user"></i>
+                                    Dr. António Silva
+                                </p>
+                                <div class="course-meta">
+                                    <span class="course-duration">
+                                        <i class="fas fa-clock"></i>
+                                        5h restantes
+                                    </span>
+                                    <span class="course-lessons">
+                                        <i class="fas fa-play-circle"></i>
+                                        18/20 aulas
+                                    </span>
+                                </div>
+                                <button class="btn btn-primary w-100">
+                                    <i class="fas fa-play me-2"></i>
+                                    Finalizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions & Calendar -->
+            <section class="bottom-section" data-aos="fade-up" data-aos-delay="300">
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="quick-actions-card">
+                            <h3>Ações Rápidas</h3>
+                            <div class="actions-grid">
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <h5>Explorar Cursos</h5>
+                                        <p>Descubra novos cursos em sua área</p>
+                                    </div>
+                                </div>
+
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-download"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <h5>Baixar Certificados</h5>
+                                        <p>Acesse seus certificados concluídos</p>
+                                    </div>
+                                </div>
+
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <h5>Comunidade</h5>
+                                        <p>Conecte-se com outros estudantes</p>
+                                    </div>
+                                </div>
+
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-headset"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <h5>Suporte</h5>
+                                        <p>Precisa de ajuda? Fale conosco</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="calendar-card">
+                            <h3>Próximas Atividades</h3>
+                            <div class="calendar-events">
+                                <div class="event-item">
+                                    <div class="event-date">
+                                        <span class="day">24</span>
+                                        <span class="month">Jun</span>
+                                    </div>
+                                    <div class="event-content">
+                                        <h6>Prova Final - Gestão Ambiental</h6>
+                                        <p>14:00 - 16:00</p>
+                                    </div>
+                                </div>
+
+                                <div class="event-item">
+                                    <div class="event-date">
+                                        <span class="day">26</span>
+                                        <span class="month">Jun</span>
+                                    </div>
+                                    <div class="event-content">
+                                        <h6>Webinar - Automação 4.0</h6>
+                                        <p>19:00 - 20:30</p>
+                                    </div>
+                                </div>
+
+                                <div class="event-item">
+                                    <div class="event-date">
+                                        <span class="day">28</span>
+                                        <span class="month">Jun</span>
+                                    </div>
+                                    <div class="event-content">
+                                        <h6>Entrega de Projeto</h6>
+                                        <p>Até 23:59</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-primary w-100 mt-3">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Ver Calendário Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div class="panel-header">
+            <h5>Notificações</h5>
+            <button class="close-panel" id="closeNotifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-content">
+            <div class="notification-item unread">
+                <div class="notification-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="notification-content">
+                    <h6>Novo curso disponível</h6>
+                    <p>Gestão de Projetos Sustentáveis foi adicionado ao catálogo</p>
+                    <span class="notification-time">2 horas atrás</span>
+                </div>
+            </div>
+
+            <div class="notification-item unread">
+                <div class="notification-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="notification-content">
+                    <h6>Certificado disponível</h6>
+                    <p>Seu certificado de Segurança no Trabalho está pronto</p>
+                    <span class="notification-time">1 dia atrás</span>
+                </div>
+            </div>
+
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="notification-content">
+                    <h6>Lembrete de aula</h6>
+                    <p>Sua próxima aula começa em 30 minutos</p>
+                    <span class="notification-time">3 dias atrás</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
+
