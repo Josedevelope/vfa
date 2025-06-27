@@ -3,17 +3,36 @@
 $(document).ready(function() {
     'use strict';
 
-    // ===== PRELOADER =====
-    function hidePreloader() {
-        $('#preloader').fadeOut(500, function() {
-            $(this).remove();
-        });
-    }
+    // ===== PRELOADER FIXED =====
+    function initPreloader() {
+        const preloader = $('#preloader');
+        const loadingProgress = $('.loading-progress');
+        
+        // Simulate loading progress
+        let progress = 0;
+        const progressInterval = setInterval(function() {
+            progress += Math.random() * 15;
+            if (progress > 100) {
+                progress = 100;
+                clearInterval(progressInterval);
+                hidePreloader();
+            }
+            loadingProgress.css('width', progress + '%');
+        }, 100);
 
-    // Hide preloader after page load
-    $(window).on('load', function() {
-        setTimeout(hidePreloader, 1000);
-    });
+        function hidePreloader() {
+            setTimeout(function() {
+                preloader.addClass('fade-out');
+                setTimeout(function() {
+                    preloader.remove();
+                    $('body').removeClass('loading');
+                }, 800);
+            }, 500);
+        }
+
+        // Fallback: hide preloader after maximum 3 seconds
+        setTimeout(hidePreloader, 3000);
+    }
 
     // ===== NAVIGATION =====
     function initNavigation() {
@@ -33,14 +52,15 @@ $(document).ready(function() {
         navLinks.on('click', function(e) {
             const href = $(this).attr('href');
             
-            if (href.startsWith('#')) {
+            if (href && href.startsWith('#')) {
                 e.preventDefault();
                 const target = $(href);
                 
                 if (target.length) {
+                    const offsetTop = target.offset().top - 80;
                     $('html, body').animate({
-                        scrollTop: target.offset().top - 80
-                    }, 800, 'easeInOutQuart');
+                        scrollTop: offsetTop
+                    }, 800);
                 }
             }
         });
@@ -70,35 +90,56 @@ $(document).ready(function() {
 
     // ===== ANIMATIONS =====
     function initAnimations() {
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            easing: 'ease-in-out',
-            once: true,
-            offset: 100
-        });
-
-        // GSAP Animations
-        if (typeof gsap !== 'undefined') {
-            // Hero title animation
-            gsap.from('.hero-title .title-line, .hero-title .title-highlight, .hero-title .title-accent', {
-                duration: 1.2,
-                y: 100,
-                opacity: 0,
-                stagger: 0.2,
-                ease: 'power3.out',
-                delay: 0.5
+        // Initialize AOS if available
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: 1000,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 100,
+                disable: function() {
+                    return window.innerWidth < 768;
+                }
             });
+        }
 
-            // Hero description and buttons animation
-            gsap.from('.hero-description, .hero-actions', {
+        // GSAP Animations if available
+        if (typeof gsap !== 'undefined') {
+            // Hero animations
+            const tl = gsap.timeline({ delay: 0.5 });
+            
+            tl.from('.hero-badge', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                ease: 'power2.out'
+            })
+            .from('.hero-title', {
                 duration: 1,
                 y: 50,
                 opacity: 0,
-                stagger: 0.3,
-                ease: 'power2.out',
-                delay: 1.2
-            });
+                ease: 'power2.out'
+            }, '-=0.3')
+            .from('.hero-description', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                ease: 'power2.out'
+            }, '-=0.5')
+            .from('.hero-stats .stat-item', {
+                duration: 0.6,
+                y: 20,
+                opacity: 0,
+                stagger: 0.1,
+                ease: 'power2.out'
+            }, '-=0.3')
+            .from('.hero-actions .btn', {
+                duration: 0.6,
+                y: 20,
+                opacity: 0,
+                stagger: 0.1,
+                ease: 'power2.out'
+            }, '-=0.2');
 
             // Floating elements animation
             gsap.to('.floating-element', {
@@ -111,42 +152,27 @@ $(document).ready(function() {
                 stagger: 2
             });
 
-            // Service cards hover animation
-            $('.service-card').hover(
-                function() {
-                    gsap.to($(this).find('.service-icon'), {
-                        duration: 0.3,
-                        scale: 1.1,
-                        rotation: 10,
-                        ease: 'back.out(1.7)'
+            // Register ScrollTrigger if available
+            if (typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // Animate sections on scroll
+                gsap.utils.toArray('.section-padding').forEach(section => {
+                    gsap.from(section.children, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 80%',
+                            end: 'bottom 20%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        duration: 0.8,
+                        y: 50,
+                        opacity: 0,
+                        stagger: 0.2,
+                        ease: 'power2.out'
                     });
-                },
-                function() {
-                    gsap.to($(this).find('.service-icon'), {
-                        duration: 0.3,
-                        scale: 1,
-                        rotation: 0,
-                        ease: 'back.out(1.7)'
-                    });
-                }
-            );
-
-            // Competency cards animation on scroll
-            gsap.registerPlugin(ScrollTrigger);
-            
-            gsap.from('.competency-card', {
-                scrollTrigger: {
-                    trigger: '.competencies-section',
-                    start: 'top 80%',
-                    end: 'bottom 20%',
-                    toggleActions: 'play none none reverse'
-                },
-                duration: 0.8,
-                y: 50,
-                opacity: 0,
-                stagger: 0.2,
-                ease: 'power2.out'
-            });
+                });
+            }
         }
     }
 
@@ -168,89 +194,79 @@ $(document).ready(function() {
             }, 16);
         }
 
-        // Intersection Observer for counters
-        const counterObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    const $counter = $(entry.target);
-                    const target = parseInt($counter.data('count'));
-                    
-                    if (!$counter.hasClass('animated')) {
-                        $counter.addClass('animated');
-                        animateCounter($counter[0], target);
+        // Use Intersection Observer for better performance
+        if ('IntersectionObserver' in window) {
+            const counterObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const $counter = $(entry.target);
+                        const target = parseInt($counter.data('count')) || parseInt($counter.text());
+                        
+                        if (!$counter.hasClass('animated')) {
+                            $counter.addClass('animated');
+                            animateCounter($counter[0], target);
+                        }
                     }
-                }
-            });
-        }, { threshold: 0.5 });
+                });
+            }, { threshold: 0.5 });
 
-        $('.stat-number[data-count]').each(function() {
-            counterObserver.observe(this);
-        });
-    }
-
-    // ===== PARALLAX EFFECTS =====
-    function initParallax() {
-        $(window).scroll(function() {
-            const scrolled = $(window).scrollTop();
-            const parallaxElements = $('.floating-element');
-            
-            parallaxElements.each(function() {
-                const speed = $(this).data('speed') || 1;
-                const yPos = -(scrolled * speed * 0.1);
-                $(this).css('transform', `translateY(${yPos}px)`);
+            $('.stat-number').each(function() {
+                counterObserver.observe(this);
             });
-        });
+        }
     }
 
     // ===== FORM HANDLING =====
     function initForms() {
         const contactForm = $('#contactForm');
         
-        contactForm.on('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = {
-                name: $('#name').val(),
-                email: $('#email').val(),
-                phone: $('#phone').val(),
-                service: $('#service').val(),
-                message: $('#message').val()
-            };
-
-            // Basic validation
-            if (!formData.name || !formData.email || !formData.message) {
-                showNotification('Por favor, preencha todos os campos obrigatórios.', 'error');
-                return;
-            }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.email)) {
-                showNotification('Por favor, insira um email válido.', 'error');
-                return;
-            }
-
-            // Simulate form submission
-            const submitBtn = contactForm.find('button[type="submit"]');
-            const originalText = submitBtn.html();
-            
-            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Enviando...');
-            submitBtn.prop('disabled', true);
-
-            setTimeout(function() {
-                submitBtn.html('<i class="fas fa-check me-2"></i>Enviado!');
-                showNotification('Mensagem enviada com sucesso! Entraremos em contato em breve.', 'success');
+        if (contactForm.length) {
+            contactForm.on('submit', function(e) {
+                e.preventDefault();
                 
-                // Reset form
-                contactForm[0].reset();
+                // Get form data
+                const formData = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    service: $('#service').val(),
+                    message: $('#message').val()
+                };
+
+                // Basic validation
+                if (!formData.name || !formData.email || !formData.message) {
+                    showNotification('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    return;
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    showNotification('Por favor, insira um email válido.', 'error');
+                    return;
+                }
+
+                // Simulate form submission
+                const submitBtn = contactForm.find('button[type="submit"]');
+                const originalText = submitBtn.html();
                 
+                submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Enviando...');
+                submitBtn.prop('disabled', true);
+
                 setTimeout(function() {
-                    submitBtn.html(originalText);
-                    submitBtn.prop('disabled', false);
+                    submitBtn.html('<i class="fas fa-check me-2"></i>Enviado!');
+                    showNotification('Mensagem enviada com sucesso! Entraremos em contato em breve.', 'success');
+                    
+                    // Reset form
+                    contactForm[0].reset();
+                    
+                    setTimeout(function() {
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }, 2000);
                 }, 2000);
-            }, 2000);
-        });
+            });
+        }
 
         // Form field animations
         $('.form-control, .form-select').on('focus', function() {
@@ -291,7 +307,7 @@ $(document).ready(function() {
                         z-index: 10000;
                         transform: translateX(400px);
                         transition: transform 0.3s ease;
-                        max-width: 400px;
+                        max-width: 90vw;
                         border-left: 4px solid;
                     }
                     .notification-success { border-left-color: #3CB371; }
@@ -303,6 +319,7 @@ $(document).ready(function() {
                         align-items: center;
                         color: #333;
                         font-weight: 500;
+                        font-size: 0.9rem;
                     }
                     .notification-close {
                         position: absolute;
@@ -315,6 +332,16 @@ $(document).ready(function() {
                         padding: 0.25rem;
                     }
                     .notification-close:hover { color: #333; }
+                    @media (max-width: 768px) {
+                        .notification {
+                            top: 1rem;
+                            right: 1rem;
+                            left: 1rem;
+                            max-width: none;
+                            transform: translateY(-100px);
+                        }
+                        .notification.show { transform: translateY(0); }
+                    }
                 </style>
             `);
         }
@@ -336,84 +363,96 @@ $(document).ready(function() {
         });
     }
 
-    // ===== BACK TO TOP BUTTON =====
-    function initBackToTop() {
-        const backToTopBtn = $('#backToTop');
-        
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 300) {
-                backToTopBtn.addClass('show');
-            } else {
-                backToTopBtn.removeClass('show');
-            }
-        });
-
-        backToTopBtn.on('click', function() {
-            $('html, body').animate({
-                scrollTop: 0
-            }, 800, 'easeInOutQuart');
-        });
-    }
-
     // ===== SCROLL INDICATOR =====
     function initScrollIndicator() {
-        $('.scroll-indicator').on('click', function() {
-            $('html, body').animate({
-                scrollTop: $(window).height()
-            }, 800, 'easeInOutQuart');
-        });
-    }
-
-    // ===== LAZY LOADING =====
-    function initLazyLoading() {
-        const imageObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-
-        document.querySelectorAll('img[data-src]').forEach(function(img) {
-            imageObserver.observe(img);
+        $('.scroll-indicator a').on('click', function(e) {
+            e.preventDefault();
+            const target = $($(this).attr('href'));
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 80
+                }, 800);
+            }
         });
     }
 
     // ===== PERFORMANCE OPTIMIZATION =====
     function initPerformanceOptimizations() {
-        // Debounce scroll events
-        let scrollTimeout;
+        // Throttle scroll events
+        let ticking = false;
+        
+        function updateOnScroll() {
+            // Scroll-dependent functions here
+            ticking = false;
+        }
+        
         $(window).on('scroll', function() {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
+            if (!ticking) {
+                requestAnimationFrame(updateOnScroll);
+                ticking = true;
             }
-            scrollTimeout = setTimeout(function() {
-                // Scroll-dependent functions here
-            }, 10);
         });
 
-        // Preload critical images
-        const criticalImages = [
-            'assets/images/WGsCTC00WcEw.jpg',
-            'assets/images/pv6ImKmjsBCB.jpg',
-            'assets/images/0kGuH69hg3IJ.jpg'
-        ];
+        // Lazy load images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            imageObserver.unobserve(img);
+                        }
+                    }
+                });
+            });
 
-        criticalImages.forEach(function(src) {
-            const img = new Image();
-            img.src = src;
-        });
+            document.querySelectorAll('img[data-src]').forEach(function(img) {
+                imageObserver.observe(img);
+            });
+        }
     }
 
     // ===== ACCESSIBILITY ENHANCEMENTS =====
     function initAccessibility() {
-        // Keyboard navigation for custom elements
-        $('.btn, .nav-link, .service-card, .competency-card').attr('tabindex', '0');
+        // Skip to main content link
+        if (!$('.skip-link').length) {
+            $('body').prepend(`
+                <a href="#home" class="skip-link">
+                    Pular para o conteúdo principal
+                </a>
+            `);
+        }
 
-        // Focus management
+        // Add skip link styles
+        if (!$('#accessibility-styles').length) {
+            $('head').append(`
+                <style id="accessibility-styles">
+                    .skip-link {
+                        position: absolute;
+                        top: -40px;
+                        left: 6px;
+                        background: #000;
+                        color: #fff;
+                        padding: 8px;
+                        text-decoration: none;
+                        z-index: 10000;
+                        border-radius: 4px;
+                        font-size: 0.9rem;
+                    }
+                    .skip-link:focus {
+                        top: 6px;
+                    }
+                    .keyboard-navigation *:focus {
+                        outline: 2px solid #6A5ACD !important;
+                        outline-offset: 2px;
+                    }
+                </style>
+            `);
+        }
+
+        // Keyboard navigation
         $(document).on('keydown', function(e) {
             if (e.key === 'Tab') {
                 $('body').addClass('keyboard-navigation');
@@ -423,119 +462,101 @@ $(document).ready(function() {
         $(document).on('mousedown', function() {
             $('body').removeClass('keyboard-navigation');
         });
-
-        // Skip to main content link
-        $('body').prepend(`
-            <a href="#home" class="skip-link">
-                Pular para o conteúdo principal
-            </a>
-        `);
-
-        // Add skip link styles
-        $('head').append(`
-            <style>
-                .skip-link {
-                    position: absolute;
-                    top: -40px;
-                    left: 6px;
-                    background: #000;
-                    color: #fff;
-                    padding: 8px;
-                    text-decoration: none;
-                    z-index: 10000;
-                    border-radius: 4px;
-                }
-                .skip-link:focus {
-                    top: 6px;
-                }
-                .keyboard-navigation *:focus {
-                    outline: 2px solid #6A5ACD !important;
-                    outline-offset: 2px;
-                }
-            </style>
-        `);
     }
 
-    // ===== EASTER EGGS =====
-    function initEasterEggs() {
-        // Konami code easter egg
-        let konamiCode = [];
-        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
-
-        $(document).on('keydown', function(e) {
-            konamiCode.push(e.keyCode);
-            if (konamiCode.length > konamiSequence.length) {
-                konamiCode.shift();
-            }
+    // ===== MOBILE OPTIMIZATIONS =====
+    function initMobileOptimizations() {
+        // Touch events for mobile
+        if ('ontouchstart' in window) {
+            $('body').addClass('touch-device');
             
-            if (konamiCode.join(',') === konamiSequence.join(',')) {
-                showNotification('🎉 Código Konami ativado! Você descobriu nosso segredo!', 'success');
-                
-                // Add special animation
-                $('body').addClass('konami-mode');
-                setTimeout(() => $('body').removeClass('konami-mode'), 3000);
+            // Improve touch targets
+            $('.btn, .nav-link').css('min-height', '44px');
+            
+            // Prevent zoom on input focus (iOS)
+            $('input, select, textarea').attr('autocomplete', 'off');
+        }
+
+        // Viewport height fix for mobile browsers
+        function setVH() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setVH();
+        $(window).on('resize orientationchange', setVH);
+
+        // Optimize animations for mobile
+        const mediaQuery = window.matchMedia('(max-width: 768px)');
+        
+        function handleMobileView(e) {
+            if (e.matches) {
+                // Disable heavy animations on mobile
+                $('.floating-card, .floating-element').css('animation', 'none');
+            } else {
+                // Re-enable animations on desktop
+                $('.floating-card, .floating-element').css('animation', '');
             }
+        }
+        
+        handleMobileView(mediaQuery);
+        mediaQuery.addListener(handleMobileView);
+    }
+
+    // ===== ERROR HANDLING =====
+    function initErrorHandling() {
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            // Optionally show user-friendly error message
         });
 
-        // Add konami mode styles
-        $('head').append(`
-            <style>
-                .konami-mode * {
-                    animation: rainbow 2s linear infinite !important;
-                }
-                @keyframes rainbow {
-                    0% { filter: hue-rotate(0deg); }
-                    100% { filter: hue-rotate(360deg); }
-                }
-            </style>
-        `);
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled Promise Rejection:', e.reason);
+        });
     }
 
     // ===== INITIALIZATION =====
     function init() {
-        initNavigation();
-        initAnimations();
-        initCounters();
-        initParallax();
-        initForms();
-        initBackToTop();
-        initScrollIndicator();
-        initLazyLoading();
-        initPerformanceOptimizations();
-        initAccessibility();
-        initEasterEggs();
-
-        // Custom easing for jQuery animations
-        $.easing.easeInOutQuart = function(x, t, b, c, d) {
-            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
-            return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
-        };
-
-        console.log('🚀 VFA-JORGE Website initialized successfully!');
+        try {
+            initPreloader();
+            initNavigation();
+            initAnimations();
+            initCounters();
+            initForms();
+            initScrollIndicator();
+            initPerformanceOptimizations();
+            initAccessibility();
+            initMobileOptimizations();
+            initErrorHandling();
+            
+            console.log('VFA-JORGE website initialized successfully');
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
     }
 
     // Start initialization
     init();
 
-    // ===== WINDOW RESIZE HANDLER =====
-    $(window).on('resize', function() {
-        // Recalculate animations on resize
-        if (typeof AOS !== 'undefined') {
-            AOS.refresh();
-        }
-    });
+    // Expose functions globally for debugging
+    window.VFA = {
+        showNotification: showNotification,
+        init: init
+    };
+});
 
-    // ===== SERVICE WORKER REGISTRATION =====
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(function(err) {
-                    console.log('ServiceWorker registration failed');
-                });
-        });
-    }
+// ===== WINDOW LOAD EVENTS =====
+$(window).on('load', function() {
+    // Additional load-dependent initializations
+    console.log('VFA-JORGE website fully loaded');
+});
+
+// ===== RESIZE HANDLER =====
+$(window).on('resize', function() {
+    // Handle responsive adjustments
+    clearTimeout(window.resizeTimeout);
+    window.resizeTimeout = setTimeout(function() {
+        // Responsive adjustments here
+    }, 250);
 });
 
